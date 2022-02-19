@@ -5,7 +5,7 @@ import imutils
 import matplotlib.pyplot as plt
 from os import listdir
 import time 
-
+import numpy as np
 
 def hms_string(sec_elapsed):
     h = int(sec_elapsed / (60 * 60))
@@ -25,24 +25,25 @@ def augment_data(file_dir, n_generated_samples, save_to_dir):
     fill_mode='nearest'
     )
 
-for filename in listdir(brain_tumor):
-    image  = cv2.imread(brain_tumor + '\\' + filename)
+    for filename in listdir(file_dir):
+        image  = cv2.imread(file_dir + '/' + filename)
+        # image = image.resize((32, 32))
+        # image = np.array(image)
+        image = image.reshape((1,)+image.shape)
 
-    image = image.reshape((1,)+image.shape)
+        save_prefix = 'aug_' + filename[:-4]
 
-    save_prefix = 'aug_' + filename[:-4]
+        i = 0
 
-    i = 0
-
-    for batch in data_gen.flow(x=image, batch_size=1, save_to_dir = save_to_dir, save_prefix=save_prefix, save_format='jpg'):
-        i += 1
-        if i > n_generated_samples:
-            break
+        for batch in data_gen.flow(x=image, batch_size=1, save_to_dir = save_to_dir, save_prefix=save_prefix, save_format='jpg'):
+            i += 1
+            if i > n_generated_samples:
+                break
 
 
 start_time = time.time()
 
-augmented_data_path = 'augmented data/'
+augmented_data_path = '/home/nikhil/brain_tumor/augmented data/'
 
 augment_data(file_dir='/home/nikhil/brain_tumor/yes', n_generated_samples=6, save_to_dir=augmented_data_path+'yes')
 
